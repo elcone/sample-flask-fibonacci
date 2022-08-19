@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api, Resource
+from flask_restful import Api, Resource, reqparse
 
 from fibonacci import fibonacci
 from models import db, NumberRequested
@@ -16,7 +16,19 @@ db.init_app(app)
 
 
 class Fibonacci(Resource):
-    def post(self, number: int):
+    def get(self):
+        numbers = NumberRequested.query.all()
+        number_schema = NumberRequestedSchema(many=True)
+        dump = number_schema.dump(numbers)
+
+        return dump
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('number')
+        args = parser.parse_args()
+        number = int(args['number'])
+
         result = fibonacci(number)
         number_requested = NumberRequested(
             number_requested=number,
@@ -27,17 +39,7 @@ class Fibonacci(Resource):
         return result
 
 
-class FibonacciList(Resource):
-    def get(self):
-        numbers = NumberRequested.query.all()
-        number_schema = NumberRequestedSchema(many=True)
-        dump = number_schema.dump(numbers)
-
-        return dump
-
-
-api.add_resource(Fibonacci, '/fibonacci/<int:number>')
-api.add_resource(FibonacciList, '/fibonacci')
+api.add_resource(Fibonacci, '/fibonacci')
 
 
 if __name__ == '__main__':
