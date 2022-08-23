@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  flask_fibonacci:
+    image: flask-fibonacci
+    container_name: flask-fibonacci
+    build: .
+    ports:
+      - "5000:5000"
+    command: flask run --host 0.0.0.0
