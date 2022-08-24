@@ -6,4 +6,4 @@ services:
     build: .
     ports:
       - "5000:5000"
-    command: flask run --host 0.0.0.0
+    command: gunicorn --bind 0.0.0.0:5000 --workers 4 app:app
